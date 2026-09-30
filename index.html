@@ -1,0 +1,1727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Impact of Extreme Heat Risk on Corporate Performance</title>
+  <style>
+    :root {
+      --primary: #0F4C81;       /* 经典学术深海蓝 */
+      --primary-dark: #0A3258;
+      --secondary: #2B78C5;     /* 科技蓝 */
+      --accent: #4A90E2;        /* 浅天蓝 */
+      --accent-subtle: #EEF5FC; /* 浅蓝底衬 */
+      --text-main: #1D2129;     /* 标题与主要文本 */
+      --text-muted: #4E5969;    /* 次级说明文本 */
+      --text-light: #86909C;    /* 标签与弱化信息 */
+      --border-color: #DDE5ED;  /* 学术边框颜色 */
+      --bg-slide: #FFFFFF;      /* 纯白底色 */
+      --bg-page: #EDF2F7;       /* 演示背景环境色 */
+      --negative-red: #C53030;  /* 负向侵蚀纯正红 */
+      --zero-line: #718096;     /* 森林图参考线灰 */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 16px;
+    }
+
+    /* 顶部控制栏 */
+    .deck-controller {
+      width: 100%;
+      max-width: 1160px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 10px 20px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(15, 76, 129, 0.06);
+      border: 1px solid var(--border-color);
+    }
+
+    .deck-controller .brand {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .deck-controller .page-pills {
+      display: flex;
+      gap: 6px;
+    }
+
+    .page-pill {
+      border: none;
+      background: #F2F3F5;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .page-pill:hover {
+      background: var(--accent-subtle);
+      color: var(--primary);
+    }
+
+    .page-pill.active {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-nav {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      font-size: 11.5px;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* 幻灯片主体容器（16:9 宽屏学术标准） */
+    .slide-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 1160px;
+      aspect-ratio: 16 / 9;
+      background: var(--bg-slide);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(15, 76, 129, 0.12);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 26px 42px 16px 42px;
+      background: var(--bg-slide);
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+
+    .slide.active {
+      opacity: 1;
+      visibility: visible;
+      z-index: 1;
+    }
+
+    /* 学术页眉 */
+    .slide-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1.5px solid var(--border-color);
+    }
+
+    .slide-header-left h2 {
+      font-size: 20px;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slide-header-left p {
+      font-size: 10.5px;
+      color: var(--text-light);
+      margin-top: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .hypothesis-tag {
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 3px;
+      background: var(--accent-subtle);
+      color: var(--primary);
+      border: 1px solid rgba(15, 76, 129, 0.2);
+    }
+
+    /* 学术页脚 */
+    .slide-footer {
+      margin-top: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 6px;
+      border-top: 1px solid #EDF2F7;
+      font-size: 9.5px;
+      color: var(--text-light);
+    }
+
+    /* ---------------- 页 1：封面规范 ---------------- */
+    .cover-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 100%;
+      padding: 10px 24px;
+    }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 14px;
+      background: var(--accent-subtle);
+      border: 1px solid rgba(15, 76, 129, 0.2);
+      border-radius: 4px;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .cover-title {
+      font-size: 28px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      max-width: 980px;
+    }
+
+    .cover-subtitle {
+      font-size: 14px;
+      color: var(--secondary);
+      font-weight: 500;
+      max-width: 920px;
+      margin-bottom: 24px;
+      line-height: 1.45;
+      font-style: italic;
+    }
+
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 860px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    .cover-meta-item .meta-label {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-meta-item .meta-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .cover-keywords {
+      font-size: 13.5px;
+      color: var(--primary-dark);
+      background: var(--accent-subtle);
+      padding: 10px 26px;
+      border-radius: 6px;
+      border: 1px solid rgba(15, 76, 129, 0.2);
+      font-weight: 500;
+      max-width: 960px;
+    }
+
+    .cover-keywords strong {
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    /* ---------------- 页 2：数据样本 3/5 + 计量模型 2/5 (上下公式 + 右侧变量) ---------------- */
+    .layout-top-bottom-p2-revised {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    /* 数据样本构建占比 3/5 */
+    .data-cards-row-35 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      flex: 3;
+    }
+
+    .academic-card-35 {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 12px 16px;
+      background: #FFFFFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-top: 3.5px solid var(--primary);
+    }
+
+    .academic-card-35.light-accent {
+      border-top-color: var(--accent);
+    }
+
+    .card-header-title-35 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .card-stats-grid-35 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 8px;
+      background: #FAFCFE;
+      padding: 6px 10px;
+      border-radius: 4px;
+      border: 1px dashed var(--border-color);
+    }
+
+    .stat-box-35 .num {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1.1;
+      font-feature-settings: "tnum";
+    }
+
+    .stat-box-35 .desc {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .card-bullets-35 {
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text-muted);
+      padding-left: 14px;
+      margin-bottom: 6px;
+    }
+
+    .card-source-footer-35 {
+      background: #F8FAFD;
+      border: 1px solid #E2E8F0;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* 计量模型卡片占 2/5：左侧两条上下公式 + 右侧放变量与吸收项 */
+    .model-strip-25-split {
+      background: var(--accent-subtle);
+      border: 1.5px solid rgba(15, 76, 129, 0.22);
+      border-radius: 6px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 2;
+      justify-content: center;
+    }
+
+    .model-strip-header-25 {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .model-split-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .model-equations-stacked {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .formula-box-stacked {
+      background: #FFFFFF;
+      padding: 6px 12px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .formula-label-stacked {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+    }
+
+    .formula-math-stacked {
+      font-family: "Cambria Math", "Times New Roman", serif;
+      font-size: 14px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .model-right-desc-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .model-right-desc-box strong {
+      color: var(--primary-dark);
+    }
+
+    /* ---------------- 页 3：左侧卡片与文本进一步放大 ---------------- */
+    .split-37-magnified {
+      display: grid;
+      grid-template-columns: 3.8fr 6.2fr;
+      gap: 16px;
+      flex: 1;
+      align-items: stretch;
+    }
+
+    .takeaway-col-further-magnified {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .hypothesis-card-further-magnified {
+      background: var(--accent-subtle);
+      border-left: 5px solid var(--primary);
+      padding: 12px 14px;
+      border-radius: 0 4px 4px 0;
+      border: 1px solid var(--border-color);
+      border-left-width: 5px;
+    }
+
+    .hypothesis-card-further-magnified .h-tag {
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .hypothesis-card-further-magnified p {
+      font-size: 12.5px;
+      color: var(--primary-dark);
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    .takeaway-box-further-magnified {
+      background: #FAFCFF;
+      border: 1px solid var(--border-color);
+      border-left: 4.5px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .takeaway-box-further-magnified h4 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .takeaway-box-further-magnified p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .key-indicator-pill-further-magnified {
+      background: #FFFFFF;
+      border: 1.5px solid var(--primary);
+      border-radius: 4px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .key-indicator-pill-further-magnified .val {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: monospace;
+    }
+
+    .key-indicator-pill-further-magnified .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: right;
+      line-height: 1.4;
+    }
+
+    .forest-container-prominent {
+      background: #FAFCFE;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .forest-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 5px;
+    }
+
+    .forest-row {
+      margin-bottom: 6px;
+    }
+
+    .forest-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 2px;
+      color: var(--text-main);
+    }
+
+    .forest-label-row .beta-text {
+      color: var(--primary);
+      font-family: monospace;
+      font-size: 11.5px;
+    }
+
+    .forest-axis {
+      position: relative;
+      height: 20px;
+      background: #FFFFFF;
+      border-radius: 3px;
+      border: 1px solid #E2E8F0;
+      display: flex;
+      align-items: center;
+    }
+
+    .zero-line {
+      position: absolute;
+      left: 15%;
+      top: 0;
+      bottom: 0;
+      width: 1.5px;
+      background: var(--zero-line);
+      z-index: 2;
+    }
+
+    .ci-bar {
+      position: absolute;
+      height: 2.5px;
+      background: var(--accent);
+      z-index: 3;
+    }
+
+    .point-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      top: -2.8px;
+      transform: translateX(-50%);
+    }
+
+    .axis-ticks {
+      position: relative;
+      height: 14px;
+      margin-top: 1px;
+      border-top: 1px solid #CBD5E0;
+    }
+
+    .tick {
+      position: absolute;
+      font-size: 9px;
+      color: var(--text-light);
+      transform: translateX(-50%);
+      top: 2px;
+    }
+
+    .tick::before {
+      content: "";
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      width: 1px;
+      height: 3px;
+      background: #CBD5E0;
+    }
+
+    .forest-ref-card {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 4px;
+      margin-bottom: 6px;
+    }
+
+    .forest-ref-card strong {
+      color: var(--primary);
+    }
+
+    .metric-interp-grid-further {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .metric-interp-card-further {
+      background: #F8FAFD;
+      border: 1px solid #DCE6F1;
+      border-radius: 4px;
+      padding: 8px 10px;
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .metric-interp-card-further strong {
+      color: var(--primary);
+      display: block;
+      font-size: 10.5px;
+      margin-bottom: 3px;
+    }
+
+    /* ---------------- 页 4：图表宽展至约 1/2 + 结论卡片填充放大 ---------------- */
+    .contrast-wrapper-half-balanced {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .contrast-kpi-row-half {
+      display: grid;
+      grid-template-columns: 1fr auto 1.2fr;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .kpi-card-box-half {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 16px;
+      background: #FFFFFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .kpi-card-box-half.positive {
+      border-left: 4.5px solid var(--accent);
+      background: linear-gradient(90deg, #F6FAFE 0%, #FFFFFF 100%);
+    }
+
+    .kpi-card-box-half.negative {
+      border-left: 4.5px solid var(--negative-red);
+      background: linear-gradient(90deg, #FFF7F7 0%, #FFFFFF 100%);
+    }
+
+    .kpi-text-left h5 {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .kpi-text-left .kpi-num {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-family: monospace;
+    }
+
+    .kpi-num.red {
+      color: var(--negative-red) !important;
+      font-size: 28px !important;
+    }
+
+    .vs-badge-half {
+      width: 30px;
+      height: 30px;
+      background: #F1F5F9;
+      border: 1.5px solid var(--border-color);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--text-muted);
+    }
+
+    .kpi-badge-half {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 3px;
+    }
+
+    .kpi-badge-half.blue {
+      background: var(--accent-subtle);
+      color: var(--primary);
+      border: 1px solid rgba(15, 76, 129, 0.2);
+    }
+
+    .kpi-badge-half.dark-red {
+      background: #FFF1F0;
+      color: var(--negative-red);
+      border: 1px solid #FFA39E;
+    }
+
+    /* 图表格子宽度拉宽，占约 1/2 空间 */
+    .compact-table-card-half {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 16px;
+      flex: 1.1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .academic-mini-table-half {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      text-align: center;
+    }
+
+    .academic-mini-table-half th {
+      border-top: 1.5px solid var(--primary);
+      border-bottom: 1px solid var(--primary);
+      padding: 7px 8px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      background: #FAFCFE;
+    }
+
+    .academic-mini-table-half td {
+      border-bottom: 1px solid #EDF2F7;
+      padding: 7px 8px;
+      color: var(--text-main);
+      font-family: monospace;
+    }
+
+    .academic-mini-table-half tr.highlight td {
+      font-weight: 800;
+      color: var(--negative-red);
+      background: #FFFBFB;
+    }
+
+    /* 结论卡片填充余下部分，字号放大 */
+    .cost-channel-grid-magnified-further {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      flex: 1;
+    }
+
+    .cost-card-magnified-further {
+      background: #F9FAFB;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .cost-card-magnified-further strong {
+      color: var(--primary);
+      display: block;
+      font-size: 13px;
+      margin-bottom: 5px;
+      font-weight: 700;
+    }
+
+    /* ---------------- 页 5：图表宽阔 + 文字放大 ---------------- */
+    .hetero-grid-expanded-further {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .hetero-panel-expanded-further {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: #FFFFFF;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hetero-panel-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hetero-panel-header h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .multiple-pill {
+      background: #FFF1F0;
+      color: var(--negative-red);
+      border: 1px solid #FFA39E;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    .bar-group-further {
+      margin-bottom: 8px;
+    }
+
+    .bar-group-meta-further {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11.5px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .n-chip {
+      background: #EDF2F7;
+      color: var(--text-muted);
+      font-size: 10px;
+      padding: 1px 6px;
+      border-radius: 2px;
+      font-weight: normal;
+    }
+
+    .bar-track-wider {
+      height: 26px;
+      background: #F2F4F7;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill-wider {
+      height: 100%;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    .bar-fill-wider.fill-deep { background: var(--primary); }
+    .bar-fill-wider.fill-light { background: var(--accent); }
+
+    .hetero-insight-further {
+      background: #FAFCFE;
+      border-radius: 5px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.65;
+      border: 1px solid var(--border-color);
+      flex: 1;
+    }
+
+    .hetero-insight-further strong {
+      color: var(--primary);
+      font-size: 12.5px;
+    }
+
+    /* ---------------- 页 6：企业微观卡片(上中下) + 宏观政策(全幅居中填充) ---------------- */
+    .p6-container-expanded-further {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .mini-coef-card-expanded {
+      background: #FAFCFE;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 14px;
+    }
+
+    .mini-coef-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 5px;
+    }
+
+    .coef-bars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .coef-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+
+    .coef-item .title {
+      font-size: 9.5px;
+      color: var(--text-light);
+      margin-bottom: 2px;
+    }
+
+    .coef-item .val {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--negative-red);
+      font-family: monospace;
+      margin-bottom: 3px;
+    }
+
+    .coef-bar-track {
+      height: 4px;
+      background: #EDF2F7;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .coef-bar-fill {
+      height: 100%;
+      background: var(--negative-red);
+    }
+
+    .policy-sections-grid-magnified-further {
+      display: grid;
+      grid-template-columns: 1.45fr 1.25fr;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .policy-column-magnified-further {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .policy-column-title-magnified-further {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--primary);
+      border-bottom: 1.5px solid var(--accent-subtle);
+      padding-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* 企业微观卡片三列排布 */
+    .policy-subcard-micro-magnified-further {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      flex: 1;
+    }
+
+    /* 内部上中下三段式结构 */
+    .policy-item-card-micro-tripart {
+      background: #FAFCFE;
+      border: 1px solid #E2E8F0;
+      border-radius: 5px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .policy-item-card-micro-tripart h4 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .policy-item-card-micro-tripart p {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: auto 0; /* 居中放置正文 */
+    }
+
+    .metric-chip-sm-further {
+      background: #F1F5F9;
+      color: var(--primary);
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 4px 6px;
+      border-radius: 2px;
+      border-left: 3px solid var(--secondary);
+      font-family: monospace;
+      margin-top: 6px;
+    }
+
+    /* 宏观政策卡片恢复上一版设计：填满格子 + 上中结构 */
+    .policy-subcards-row-macro-filled {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .policy-item-card-macro-filled {
+      background: #FAFCFE;
+      border: 1px solid #E2E8F0;
+      border-radius: 5px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .policy-item-card-macro-filled h4 {
+      font-size: 12.5px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .policy-item-card-macro-filled p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin: auto 0; /* 居中放大放置正文 */
+    }
+
+    .closing-banner-prominent {
+      background: var(--primary);
+      color: #FFFFFF;
+      text-align: center;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 4px rgba(15, 76, 129, 0.15);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部控制栏 -->
+  <div class="deck-controller">
+    <div class="brand">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      CLIMATE RESILIENCE & CORPORATE PERFORMANCE
+    </div>
+    <div class="page-pills">
+      <button class="page-pill active" onclick="goToSlide(0)">1. 封面与关键词</button>
+      <button class="page-pill" onclick="goToSlide(1)">2. 样本与计量模型</button>
+      <button class="page-pill" onclick="goToSlide(2)">3. 产出端钝化 (H1)</button>
+      <button class="page-pill" onclick="goToSlide(3)">4. 利润端侵蚀 (H2)</button>
+      <button class="page-pill" onclick="goToSlide(4)">5. 异质性检验 (H3)</button>
+      <button class="page-pill" onclick="goToSlide(5)">6. 稳健性与启示</button>
+    </div>
+    <div class="nav-buttons">
+      <button class="btn-nav" onclick="prevSlide()">◀ 上一页</button>
+      <button class="btn-nav" onclick="nextSlide()">下一页 ▶</button>
+    </div>
+  </div>
+
+  <!-- 幻灯片主体容器 -->
+  <div class="slide-wrapper">
+
+    <!-- Slide 1: 封面与关键词 -->
+    <section class="slide active" id="slide-0">
+      <div class="cover-container">
+        <div class="cover-badge">Academic Presentation · Climate Finance & Operational Resilience</div>
+        <h1 class="cover-title">极端高温风险对中国制造业微观绩效的冲击与应对韧性</h1>
+        <p class="cover-subtitle">The Impact of Extreme Heat Risk on Micro Level Corporate Performance and Operational Resilience in Chinese Manufacturing Firms</p>
+        
+        <div class="cover-meta-grid">
+          <div class="cover-meta-item">
+            <div class="meta-label">Presenter / 汇报人</div>
+            <div class="meta-val">冯伟强</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="meta-label">Supervisor / 指导教师</div>
+            <div class="meta-val">刘义姣</div>
+          </div>
+          <div class="cover-meta-item">
+            <div class="meta-label">Affiliation / 培养单位</div>
+            <div class="meta-val">深圳技术大学 商学院</div>
+          </div>
+        </div>
+
+        <div class="cover-keywords">
+          <strong>关键词：</strong> 极端高温 ； 制造业上市公司 ； 全员劳动生产率 ； 净资产收益率 (ROE) ； 双向固定效应 ； 气候韧性
+        </div>
+      </div>
+      <div class="slide-footer">
+        <span>Shenzhen Technology University · School of Business</span>
+        <span>Slide 1 / 6</span>
+      </div>
+    </section>
+
+    <!-- Slide 2: 样本构建 (3/5) 与 计量模型设定 (2/5：上下公式 + 右侧变量) -->
+    <section class="slide" id="slide-1">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>数据样本构建与实证计量模型设定</h2>
+          <p>Sample Construction, Spatial Matching & Econometric Specifications</p>
+        </div>
+        <span class="hypothesis-tag">Panel: N = 28,884</span>
+      </div>
+
+      <div class="layout-top-bottom-p2-revised">
+        <!-- 上半部分卡片：占纵向空间约 3/5 -->
+        <div class="data-cards-row-35">
+          <!-- 左卡片：企业财务样本 -->
+          <div class="academic-card-35">
+            <div>
+              <div class="card-header-title-35">微观企业样本（财务面板底表）</div>
+              <div class="card-stats-grid-35">
+                <div class="stat-box-35">
+                  <div class="num">3,780</div>
+                  <div class="desc">A股制造类上市公司</div>
+                </div>
+                <div class="stat-box-35">
+                  <div class="num">28,884</div>
+                  <div class="desc">微观面板观测值</div>
+                </div>
+                <div class="stat-box-35">
+                  <div class="num">11 年</div>
+                  <div class="desc">2014—2024 窗口</div>
+                </div>
+              </div>
+              <ul class="card-bullets-35">
+                <li>口径与清洗：证监会制造业（C 门类），剔除 ST/*ST、资不抵债（Lev ≥ 1）及关键科目缺失；</li>
+                <li>连续变量控制：全量微观财务指标在 1% 与 99% 分位数实施双侧缩尾 (Winsorize)。</li>
+              </ul>
+            </div>
+            <div class="card-source-footer-35">
+              <strong>微观财务数据来源：</strong>国泰安 CSMAR 数据库（China Stock Market & Accounting Research Database）
+            </div>
+          </div>
+
+          <!-- 右卡片：气象台站样本 -->
+          <div class="academic-card-35 light-accent">
+            <div>
+              <div class="card-header-title-35">地面气象台站与外生冲击底表</div>
+              <div class="card-stats-grid-35">
+                <div class="stat-box-35">
+                  <div class="num">134</div>
+                  <div class="desc">国家级基准台站</div>
+                </div>
+                <div class="stat-box-35">
+                  <div class="num">3 维度</div>
+                  <div class="desc">细粒度高温指标</div>
+                </div>
+                <div class="stat-box-35">
+                  <div class="num">0 缺失</div>
+                  <div class="desc">球面大圆就近对齐</div>
+                </div>
+              </div>
+              <ul class="card-bullets-35">
+                <li>测度指标：极端高温天数 (HeatDays_35)、持续热浪天数 (HW_Days_35)、热浪频次 (HW_Freq_35)；</li>
+                <li>并发灾害与基准：地级市 200km 缓冲区台风暴露频次 (Typhoon_Freq)、年均气温与降水量。</li>
+              </ul>
+            </div>
+            <div class="card-source-footer-35">
+              <strong>气象与灾害数据来源：</strong>美国国家海洋和大气管理局国家环境信息中心（NOAA NCEI ISD/GSOD 全球地面逐日气象观测网）与 中国气象局台风最佳路径数据集（CMA Tropical Cyclone Best Track Dataset）
+            </div>
+          </div>
+        </div>
+
+        <!-- 下半部分模型卡片：占约 2/5 纵向高度，左侧上下两条公式 + 右侧放变量 -->
+        <div class="model-strip-25-split">
+          <div class="model-strip-header-25">双向固定效应基准计量模型设定 (Two-Way Fixed Effects, TWFE)</div>
+          <div class="model-split-grid">
+            <!-- 左侧：两条上下排列的加宽白色公式卡片 -->
+            <div class="model-equations-stacked">
+              <div class="formula-box-stacked">
+                <span class="formula-label-stacked">基准产出模型 (TWFE Baseline Model - H1)</span>
+                <div class="formula-math-stacked">
+                  Labor_Prod<sub>it</sub> = α + β<sub>1</sub>Climate<sub>it</sub> + γX<sub>it</sub> + μ<sub>i</sub> + λ<sub>t</sub> + ε<sub>it</sub>
+                </div>
+              </div>
+              <div class="formula-box-stacked">
+                <span class="formula-label-stacked">利润侵蚀机制模型 (Mechanism Model - H2)</span>
+                <div class="formula-math-stacked">
+                  ROE<sub>it</sub> = α + β<sub>1</sub>Climate<sub>it</sub> + γX<sub>it</sub> + μ<sub>i</sub> + λ<sub>t</sub> + ε<sub>it</sub>
+                </div>
+              </div>
+            </div>
+
+            <!-- 右侧：控制变量集与高阶吸收项 -->
+            <div class="model-right-desc-box">
+              <div>• <strong>控制变量集 (X<sub>it</sub>)</strong>: 企业规模 (Size)、资产负债率 (Lev)、年均温 (Mean_Temp_C)、降水 (ln_Precip)、台风频次 (Typhoon_Freq)</div>
+              <div>• <strong>高阶吸收项</strong>: 企业个体 FE (μ<sub>i</sub>) + 年份时间 FE (λ<sub>t</sub>) ｜ <strong>标准误</strong>: 企业层面聚类稳健调整 (Cluster at Firm Level)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>CSMAR Database & NOAA NCEI ISD/GSOD Station Observations</span>
+        <span>Slide 2 / 6</span>
+      </div>
+    </section>
+
+    <!-- Slide 3: 产出端钝化森林图与数据解读 -->
+    <section class="slide" id="slide-2">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>基准实证结果：产出端的“微弱弹性与钝化韧性”</h2>
+          <p>Baseline Regression: Output-Side Inelasticity of Listed Manufacturers</p>
+        </div>
+        <span class="hypothesis-tag">验证假设 H1</span>
+      </div>
+
+      <div class="split-37-magnified">
+        <div class="takeaway-col-further-magnified">
+          <div class="hypothesis-card-further-magnified">
+            <div class="h-tag">核心研究假设 (Hypothesis 1)</div>
+            <p>H1: 极端高温对中国上市制造业全员劳动生产率的影响在经济意义上微弱，产出端具备显著刚性与钝化特征。</p>
+          </div>
+
+          <div class="takeaway-box-further-magnified">
+            <h4>打破“物理减产”传统普查直觉</h4>
+            <p>早期针对手工作坊文献多得出显著减产。本研究证实现代大型上市制造企业在产出规模上具有高度的<strong>“钝化与不敏感性”</strong>。</p>
+          </div>
+
+          <div class="takeaway-box-further-magnified">
+            <h4>自动化与微环境的物理屏障</h4>
+            <p>上市制造企业依托<strong>恒温净化车间、自动化数控流水线及柔性排班</strong>，有效解耦了外部热浪与工作环境，维持物理交付稳定。</p>
+          </div>
+
+          <div class="key-indicator-pill-further-magnified">
+            <div class="val">β = +0.0033***</div>
+            <div class="sub">多1个极端高温日仅使人均产出微动 0.33%<br>经济意义上微弱至可忽略</div>
+          </div>
+        </div>
+
+        <div class="forest-container-prominent">
+          <div>
+            <div class="forest-title">
+              <span>基准回归系数森林图 (Point Estimates & 95% Confidence Intervals)</span>
+              <span style="font-size: 10.5px; font-weight: normal; color: var(--text-muted);">因变量: 全员劳动生产率 (Labor_Prod)</span>
+            </div>
+
+            <!-- Forest Row 1 -->
+            <div class="forest-row">
+              <div class="forest-label-row">
+                <span>(1) 极端高温天数 (HeatDays_35)</span>
+                <span class="beta-text">β = 0.0033*** [0.0023, 0.0043]</span>
+              </div>
+              <div class="forest-axis">
+                <div class="zero-line"></div>
+                <div class="ci-bar" style="left: 17%; width: 12%;">
+                  <div class="point-dot" style="left: 50%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Forest Row 2 -->
+            <div class="forest-row">
+              <div class="forest-label-row">
+                <span>(2) 持续热浪累计天数 (HW_Days_35)</span>
+                <span class="beta-text">β = 0.0040*** [0.0030, 0.0050]</span>
+              </div>
+              <div class="forest-axis">
+                <div class="zero-line"></div>
+                <div class="ci-bar" style="left: 18%; width: 13%;">
+                  <div class="point-dot" style="left: 50%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Forest Row 3 -->
+            <div class="forest-row">
+              <div class="forest-label-row">
+                <span>(3) 持续热浪发生频次 (HW_Freq_35)</span>
+                <span class="beta-text">β = 0.0217*** [0.0166, 0.0268]</span>
+              </div>
+              <div class="forest-axis">
+                <div class="zero-line"></div>
+                <div class="ci-bar" style="left: 31%; width: 22%;">
+                  <div class="point-dot" style="left: 50%;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 坐标刻度 -->
+            <div class="axis-ticks">
+              <span class="tick" style="left: 15%;">0 (无影响基准)</span>
+              <span class="tick" style="left: 25%;">0.01</span>
+              <span class="tick" style="left: 45%;">0.02</span>
+              <span class="tick" style="left: 70%;">0.03</span>
+            </div>
+
+            <div class="forest-ref-card">
+              <strong>【森林图与刻度参考】：</strong> 垂直 0 线代表因变量不受自变量影响的理论原点。回归系数绝对值极其紧贴 0 轴（远小于 0.02 刻度线），直观印证了产出端的微弱弹性与钝化刚性。
+            </div>
+          </div>
+
+          <div class="metric-interp-grid-further">
+            <div class="metric-interp-card-further">
+              <strong>(1) 极端高温天数 (HeatDays_35)</strong>
+              边际系数仅为 <strong>0.0033***</strong>。多 1 个极端高温日仅使人均产出微动 0.33%，证实单一高温持续暴露对交付规模影响极微。
+            </div>
+            <div class="metric-interp-card-further">
+              <strong>(2) 持续热浪天数 (HW_Days_35)</strong>
+              累积效应系数为 <strong>0.0040***</strong>。持续 ≥3 天热浪累积对劳动生产率的冲击弹性依然低于千分之四，企业排班制度韧性经受住了检验。
+            </div>
+            <div class="metric-interp-card-further">
+              <strong>(3) 持续热浪频次 (HW_Freq_35)</strong>
+              冲击频次系数为 <strong>0.0217***</strong>。尽管反复热浪冲击显著，但整体弹性仍维持在 2% 的低位，并未击穿自动化产线的防御阈值。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Table 3: Baseline TWFE Estimates on Labor Productivity (Control for Size, Lev, Temp, Precip)</span>
+        <span>Slide 3 / 6</span>
+      </div>
+    </section>
+
+    <!-- Slide 4: 利润端侵蚀（图表占约 1/2 + 结论卡片填充放大） -->
+    <section class="slide" id="slide-3">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>机制检验结果：利润端的“真实侵蚀与价值失血”</h2>
+          <p>Mechanism Analysis: Profitability Erosion & Operating Cost Inflation</p>
+        </div>
+        <span class="hypothesis-tag" style="background:#FFF1F0; color:var(--negative-red); border-color:#FFA39E;">验证假设 H2</span>
+      </div>
+
+      <div class="contrast-wrapper-half-balanced">
+        <div class="contrast-kpi-row-half">
+          <div class="kpi-card-box-half positive">
+            <div class="kpi-text-left">
+              <h5>产出端表现 (全员劳动生产率)</h5>
+              <div class="kpi-num">+0.0033***</div>
+            </div>
+            <div class="kpi-badge-half blue">产出保持刚性 · 物理交付稳定</div>
+          </div>
+
+          <div class="vs-badge-half">VS</div>
+
+          <div class="kpi-card-box-half negative">
+            <div class="kpi-text-left">
+              <h5>利润端侵蚀 (净资产收益率 ROE)</h5>
+              <div class="kpi-num red">-0.0008***</div>
+            </div>
+            <div class="kpi-badge-half dark-red">资本收益显著受损 (p ≤ 0.0002)</div>
+          </div>
+        </div>
+
+        <div class="compact-table-card-half">
+          <table class="academic-mini-table-half">
+            <thead>
+              <tr>
+                <th style="text-align: left;">气候核心解释变量</th>
+                <th>(1) 极端高温天数 → ROE</th>
+                <th>(2) 持续热浪天数 → ROE</th>
+                <th>(3) 持续热浪频次 → ROE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="highlight">
+                <td style="text-align: left; font-weight: bold;">气候冲击系数 (β)</td>
+                <td>-0.0008*** (0.0002)</td>
+                <td>-0.0008*** (0.0002)</td>
+                <td>-0.0039*** (0.0010)</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">企业规模 (Size)</td>
+                <td>0.0478*** (0.0044)</td>
+                <td>0.0480*** (0.0044)</td>
+                <td>0.0479*** (0.0044)</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">资产负债率 (Lev)</td>
+                <td>-0.5308*** (0.0249)</td>
+                <td>-0.5311*** (0.0249)</td>
+                <td>-0.5313*** (0.0249)</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">控制变量 / 双向固定效应</td>
+                <td>控制气温、降水 / Firm FE & Year FE</td>
+                <td>控制气温、降水 / Firm FE & Year FE</td>
+                <td>控制气温、降水 / Firm FE & Year FE</td>
+              </tr>
+              <tr>
+                <td style="text-align: left;">样本量 / 组内拟合度 R²</td>
+                <td>28,884 / 0.1192</td>
+                <td>28,884 / 0.1194</td>
+                <td>28,884 / 0.1192</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cost-channel-grid-magnified-further">
+          <div class="cost-card-magnified-further">
+            <strong>① 工业空调峰值用电暴增</strong>
+            维持封闭恒温厂房温湿度设定点导致夏季电力负荷飙升，叠加尖峰电价与避峰溢价，直接抬高单件能耗成本。
+          </div>
+          <div class="cost-card-magnified-further">
+            <strong>② 设备热应力损耗与维保激增</strong>
+            重载动力系统与高精密工装在高温下热疲劳加剧，推升预防性巡检、润滑更换与突发故障维保开支。
+          </div>
+          <div class="cost-card-magnified-further">
+            <strong>③ 刚性防暑降温与轮休补贴</strong>
+            法定高温津贴、清凉饮料配给及倒班加班溢价直接增加管理与制造费用，无法在短期内转嫁给下游客户。
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Table 4: Mechanism TWFE Estimates on Corporate Return on Equity (ROE)</span>
+        <span>Slide 4 / 6</span>
+      </div>
+    </section>
+
+    <!-- Slide 5: 异质性检验（图表宽阔 + 文字放大） -->
+    <section class="slide" id="slide-4">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>异质性检验：要素密集度与区域气候适应经验</h2>
+          <p>Heterogeneity Analysis: Factor Intensity & Prior Climatic Adaptation Gaps</p>
+        </div>
+        <span class="hypothesis-tag">验证假设 H3a & H3b</span>
+      </div>
+
+      <div class="hetero-grid-expanded-further">
+        <div class="hetero-panel-expanded-further">
+          <div class="hetero-panel-header">
+            <h3>维度一：要素密集度异质性 (H3a)</h3>
+            <span class="multiple-pill">敏感度相差 2.4 倍</span>
+          </div>
+
+          <div>
+            <div class="bar-group-further">
+              <div class="bar-group-meta-further">
+                <span>劳动密集型制造业 <span class="n-chip">N = 14,442</span></span>
+                <span style="color: var(--negative-red); font-weight:700;">β = 0.0041*** (0.0006)</span>
+              </div>
+              <div class="bar-track-wider">
+                <div class="bar-fill-wider fill-light" style="width: 82%;">0.0041</div>
+              </div>
+            </div>
+
+            <div class="bar-group-further">
+              <div class="bar-group-meta-further">
+                <span>资本/技术密集型制造业 <span class="n-chip">N = 14,442</span></span>
+                <span style="color: var(--primary); font-weight:700;">β = 0.0017** (0.0008)</span>
+              </div>
+              <div class="bar-track-wider">
+                <div class="bar-fill-wider fill-deep" style="width: 34%;">0.0017</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hetero-insight-further">
+            <strong>【假设 H3a 检验机理与实证启示】：</strong><br>
+            • <strong>弹性倍数反差：</strong> 劳动密集型企业的产出敏感度约为资本密集型的 <strong>2.4 倍</strong>；<br>
+            • <strong>装备吸收屏障：</strong> 资本与技术密集型依托密闭恒温净化车间与数控流水线，使人均产出弹性收窄近 60%；<br>
+            • <strong>人力脆弱暴露：</strong> 劳动密集型企业高度依赖现场体力作业，受工人热生理耐受极限约束，面临显著更高的效率波动风险。
+          </div>
+        </div>
+
+        <div class="hetero-panel-expanded-further">
+          <div class="hetero-panel-header">
+            <h3>维度二：区域适应性异质性 (H3b)</h3>
+            <span class="multiple-pill">敏感度相差 1.8 倍</span>
+          </div>
+
+          <div>
+            <div class="bar-group-further">
+              <div class="bar-group-meta-further">
+                <span>北方制造企业 (低适应区) <span class="n-chip">N = 7,750</span></span>
+                <span style="color: var(--negative-red); font-weight:700;">β = 0.0050*** (0.0012)</span>
+              </div>
+              <div class="bar-track-wider">
+                <div class="bar-fill-wider fill-deep" style="width: 100%;">0.0050</div>
+              </div>
+            </div>
+
+            <div class="bar-group-further">
+              <div class="bar-group-meta-further">
+                <span>南方制造企业 (高适应区) <span class="n-chip">N = 21,134</span></span>
+                <span style="color: var(--primary); font-weight:700;">β = 0.0028*** (0.0007)</span>
+              </div>
+              <div class="bar-track-wider">
+                <div class="bar-fill-wider fill-light" style="width: 56%;">0.0028</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hetero-insight-further">
+            <strong>【假设 H3b 检验机理与实证启示】：</strong><br>
+            • <strong>地理划界标准：</strong> 严格按照中国自然气候经典秦岭—淮河分界线划分子样本；<br>
+            • <strong>先验经验积累：</strong> 南方历史长周期处于湿热环境，在厂房隔热通风、负荷避峰及作息排班上已形成制度化常态适应机制；<br>
+            • <strong>突发脉冲脆弱：</strong> 北方厂房与区域电网对偶发热浪缺乏常态化缓冲，面临高达 <strong>1.8 倍</strong> 的扰动弹性冲击。
+          </div>
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Table 7 & Table 8: Subsample Regressions by Factor Intensity and Geographic Region</span>
+        <span>Slide 5 / 6</span>
+      </div>
+    </section>
+
+    <!-- Slide 6: 稳健性检验与结论启示 (严格按用户要求的卡片上中下排版 + 宏观填满居中) -->
+    <section class="slide" id="slide-5">
+      <div class="slide-header">
+        <div class="slide-header-left">
+          <h2>稳健性检验与核心应对策略</h2>
+          <p>Robustness Verifications & Strategic Resilience Framework</p>
+        </div>
+        <span class="hypothesis-tag">Identification & Strategies</span>
+      </div>
+
+      <div class="p6-container-expanded-further">
+        <!-- 迷你系数对比条 -->
+        <div class="mini-coef-card-expanded">
+          <div class="mini-coef-header">
+            <span>稳健性检验：净资产收益率 (ROE) 负向侵蚀系数跨模型对比</span>
+            <span style="font-weight:normal; font-size:10.5px; color:var(--text-light);">严控台风冲击与 341 个高阶省份×年份吸收单元</span>
+          </div>
+          <div class="coef-bars-grid">
+            <div class="coef-item">
+              <div class="title">(1) 基准 TWFE 模型</div>
+              <div class="val">β = -0.0008***</div>
+              <div class="coef-bar-track"><div class="coef-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="coef-item">
+              <div class="title">(2) 控制并发台风 (Typhoon_Freq)</div>
+              <div class="val">β = -0.0008***</div>
+              <div class="coef-bar-track"><div class="coef-bar-fill" style="width: 100%;"></div></div>
+            </div>
+            <div class="coef-item">
+              <div class="title">(3) 省份 × 年份联合固定效应</div>
+              <div class="val">β = -0.0004*** (产出端收敛至 0 且不显著)</div>
+              <div class="coef-bar-track"><div class="coef-bar-fill" style="width: 50%;"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 结构化两层对策卡片 -->
+        <div class="policy-sections-grid-magnified-further">
+          <!-- 模块一：企业微观层面应对（3条：上中下结构） -->
+          <div class="policy-column-magnified-further">
+            <div class="policy-column-title-magnified-further">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              一、企业微观层面的应对与适应策略（3 条）
+            </div>
+            <div class="policy-subcard-micro-magnified-further">
+              <!-- 条目 1 -->
+              <div class="policy-item-card-micro-tripart">
+                <h4>1. 能源避峰管理</h4>
+                <p>部署“分布式光伏+工商业储能”，在夏季尖峰时段削峰填谷，参与电网需求响应对冲电价刚性。</p>
+                <div class="metric-chip-sm-further">锚定 ROE 渠道 β=-0.0008***</div>
+              </div>
+              <!-- 条目 2 -->
+              <div class="policy-item-card-micro-tripart">
+                <h4>2. 工位局部技改</h4>
+                <p>针对注塑、冲压等高热工位实施局部自动化“机器换人”与定向微通风，降低人员生理脆弱性。</p>
+                <div class="metric-chip-sm-further">对冲劳动密集 2.4× 脆弱性</div>
+              </div>
+              <!-- 条目 3 -->
+              <div class="policy-item-card-micro-tripart">
+                <h4>3. 设备状态维保</h4>
+                <p>针对重载产线建立夏季预防性维保预案，利用传感器监测热疲劳，变事后抢修为事前排查。</p>
+                <div class="metric-chip-sm-further">平抑北方偶发 1.8× 扰动</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 模块二：宏观与行业层面支持（2条：铺满格子 + 上中结构） -->
+          <div class="policy-column-magnified-further">
+            <div class="policy-column-title-magnified-further">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              二、宏观与行业层面的支持性政策建议（2 条）
+            </div>
+            <div class="policy-subcards-row-macro-filled">
+              <!-- 政策 1 -->
+              <div class="policy-item-card-macro-filled">
+                <h4>1. 实施差异化工业避峰用电补偿与补贴机制</h4>
+                <p>对在极端热浪期间主动错峰、参与需求侧响应的制造企业给予专项度电补贴，避免一刀切限电侵蚀微观当期 ROE。</p>
+              </div>
+              <!-- 政策 2 -->
+              <div class="policy-item-card-macro-filled">
+                <h4>2. 推行分区域工业建筑气候适应性改造标准与专项资金</h4>
+                <p>对北方及传统劳动密集型工业集聚区，出台厂房热工隔热、通风与微气候技改专项财税扶持，缩小南北适应性鸿沟。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部收束金句 Banner -->
+        <div class="closing-banner-prominent">
+          核心实证结论：保产出 ≠ 保利润 ｜ 战略管理重点：控成本失血，而非守物理交付
+        </div>
+      </div>
+
+      <div class="slide-footer">
+        <span>Table 5 & Table 6 Robustness Evidence ｜ Strategic Resilience Framework</span>
+        <span>Slide 6 / 6</span>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const pills = document.querySelectorAll('.page-pill');
+
+    function updateSlide() {
+      slides.forEach((slide, index) => {
+        slide.classList.toggle('active', index === currentSlide);
+      });
+      pills.forEach((pill, index) => {
+        pill.classList.toggle('active', index === currentSlide);
+      });
+    }
+
+    function goToSlide(index) {
+      if (index >= 0 && index < slides.length) {
+        currentSlide = index;
+        updateSlide();
+      }
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        currentSlide++;
+        updateSlide();
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        currentSlide--;
+        updateSlide();
+      }
+    }
+
+    // 绑定键盘左右箭头键与空格翻页
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+        nextSlide();
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        prevSlide();
+      }
+    });
+  </script>
+</body>
+</html>
